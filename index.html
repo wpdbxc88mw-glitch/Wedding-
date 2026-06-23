@@ -762,10 +762,20 @@
   const reveals = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
+      // FIX: Check if the page has actually finished loading first
+      if (e.isIntersecting && document.readyState === 'complete') { 
+        e.target.classList.add('in-view'); 
+        io.unobserve(e.target); 
+      }
     });
   }, { threshold: 0.12 });
-  reveals.forEach(r => io.observe(r));
+  
+  // Wait for the window to fully load before observing to prevent auto-scrolling
+  window.addEventListener('load', () => {
+    reveals.forEach(r => io.observe(r));
+    // Ensure we start at the top
+    window.scrollTo(0, 0);
+  });
 
   // Countdown (Targeting September 12, 2026 at 4:00 PM)
   const wedding = new Date('2026-09-12T16:00:00');
